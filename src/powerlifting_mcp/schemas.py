@@ -56,7 +56,7 @@ class LiftBalanceInput(_Input):
     sex: Sex = Field(description="'M' or 'F'")
     squat_kg: float = Field(gt=0, le=600, description="Best squat in kg")
     bench_kg: float = Field(gt=0, le=450, description="Best benchmark in kg")
-    deaflift_kg: float = Field(gt=0, le=450, description="Best deaflift in kg")
+    deadlift_kg: float = Field(gt=0, le=450, description="Best deadlift in kg")
 
 
 class _Output(BaseModel):

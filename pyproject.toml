@@ -1,14 +1,14 @@
 [project]
 name = "powerlifting-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server exposing a calibrated Greek raw powerlifting model as agent tools"
 readme = "README.md"
 authors = [
     { name = "Kostas Rigatos", email = "92konstantinos10@gmail.com" }
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "mcp[cli]>=2.3.0",
+    "mcp[cli]>=2.3.0,<3",
     "numpy>=2.5.4",
     "pandas>=3.1.0",
     "pydantic>=2.14.2",
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-powerlifting-mcp = "powerlifting_mcp:main"
+powerlifting-mcp = "powerlifting_mcp.server:main"
 
 [build-system]
 requires = ["uv_build>=0.12.22,<0.13.0"]
