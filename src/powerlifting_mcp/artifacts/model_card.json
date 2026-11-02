@@ -1,0 +1,104 @@
+{
+  "model": {
+    "file": "model_age_total.json",
+    "type": "XGBRegressor (Optuna-tuned, age-augmented features)",
+    "target": "TotalKg",
+    "feature_names": [
+      "Sex_binary",
+      "BodyweightKg",
+      "Age",
+      "Fed_ESDT",
+      "Fed_GPL",
+      "Fed_Other Federations"
+    ],
+    "reference_federation": "HPF (all federation dummies zero)",
+    "best_params": {
+      "n_estimators": 826,
+      "learning_rate": 0.012731654636830573,
+      "max_depth": 6,
+      "min_child_weight": 8,
+      "subsample": 0.9178262394508081,
+      "colsample_bytree": 0.550209297512699,
+      "reg_alpha": 0.04794476014302222,
+      "reg_lambda": 9.942053265805118,
+      "random_state": 42,
+      "verbosity": 0
+    },
+    "training_ranges": {
+      "BodyweightKg": [
+        45.5,
+        185.0
+      ],
+      "Age": [
+        10.0,
+        74.5
+      ]
+    }
+  },
+  "data": {
+    "opl_release_file": "openpowerlifting-2026-08-01-55149139.csv",
+    "cohort": "Greek raw full-power (SBD) entries since 2015, OpenPowerlifting",
+    "n_cohort_entries": 2646,
+    "n_train": 1462,
+    "n_test": 366
+  },
+  "metrics": {
+    "test_rmse_kg": 78.63249811984397,
+    "cv_rmse_kg_mean": 79.91931930857831,
+    "cv_rmse_kg_std": 2.8272969337552287
+  },
+  "conformal": {
+    "method": "split conformal, absolute-residual score, finite-sample quantile k = ceil((n_cal + 1)(1 - alpha)); 50/50 sex-stratified split of the test set",
+    "n_calibration": 183,
+    "n_validation": 183,
+    "n_validation_female": 38,
+    "levels": [
+      {
+        "confidence": 0.5,
+        "half_width_kg": 47.181304931640625,
+        "coverage_overall_pct": 49.18032786885246,
+        "coverage_male_pct": 44.13793103448276,
+        "coverage_female_pct": 68.42105263157895
+      },
+      {
+        "confidence": 0.68,
+        "half_width_kg": 81.11944580078125,
+        "coverage_overall_pct": 74.31693989071039,
+        "coverage_male_pct": 70.34482758620689,
+        "coverage_female_pct": 89.47368421052632
+      },
+      {
+        "confidence": 0.8,
+        "half_width_kg": 103.5140380859375,
+        "coverage_overall_pct": 83.06010928961749,
+        "coverage_male_pct": 79.3103448275862,
+        "coverage_female_pct": 97.36842105263158
+      },
+      {
+        "confidence": 0.95,
+        "half_width_kg": 162.37222290039062,
+        "coverage_overall_pct": 94.53551912568307,
+        "coverage_male_pct": 93.10344827586206,
+        "coverage_female_pct": 100.0
+      }
+    ]
+  },
+  "percentiles": {
+    "cohort": "all entries in cohort.csv (not the best-per-lifter), within sex",
+    "strength_standing_metric": "DOTS (2019 coefficients, bodyweight clamped 40-210 M / 40-150 F)"
+  },
+  "versions": {
+    "xgboost": "3.2.0",
+    "scikit-learn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.3.3",
+    "optuna": "4.7.0"
+  },
+  "limitations": [
+    "Optuna's 5-fold CV search used the full age cohort, including the test rows, so the test RMSE is slightly optimistic.",
+    "Interval width is fixed per confidence level and coverage is marginal, not per sex: women are over-covered and men slightly under-covered at some levels.",
+    "The calibration and validation halves are small (about 183 rows each, about 37 women in validation), so the coverage figures carry wide sampling error.",
+    "Valid only for Greek raw full-power powerlifting; not for equipped powerlifting, bench-only meets, deadlift-only meets or other countries.",
+    "Inputs outside the training ranges are extrapolations."
+  ]
+}
