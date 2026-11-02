@@ -1,7 +1,7 @@
 """Pydantic models for the inputs and outputs of the tool.
 
 These are the contract an agent sees: field types, bounds and descriptions become
-the JSON schema and each MCP tool.
+the JSON schema of each MCP tool.
 """
 
 from __future__ import annotations
@@ -37,7 +37,11 @@ class PredictTotalInput(_Input):
     bodyweight_kg: float = Field(ge=BW_MIN, le=BW_MAX, description="Body weight in kg")
     age: float = Field(ge=AGE_MIN, le=AGE_MAX, description="Age in years")
     federation: Federation = Field(
-        default="HPF", description="Greek federation: HPF, ESDT or GPL; 'Other' for any other"
+        default="HPF",
+        description=(
+            "Federation the lifter competes in; a model feature, with HPF as the reference. "
+            "Use 'Other' for any federation besides HPF, ESDT, GPL"
+        ),
     )
     confidence: Confidence = Field(
         default=Confidence.P95, description="Confidence level of the prediction interval"
@@ -55,8 +59,8 @@ class StrengthStandingInput(_Input):
 class LiftBalanceInput(_Input):
     sex: Sex = Field(description="'M' or 'F'")
     squat_kg: float = Field(gt=0, le=600, description="Best squat in kg")
-    bench_kg: float = Field(gt=0, le=450, description="Best benchmark in kg")
-    deadlift_kg: float = Field(gt=0, le=450, description="Best deadlift in kg")
+    bench_kg: float = Field(gt=0, le=450, description="Best bench press in kg")
+    deadlift_kg: float = Field(gt=0, le=600, description="Best deadlift in kg")
 
 
 class _Output(BaseModel):
@@ -64,6 +68,9 @@ class _Output(BaseModel):
 
 
 class TotalPredictionOutput(_Output):
+    inputs: PredictTotalInput = Field(
+        description="The inputs this prediction used, defaults included"
+    )
     predicted_total_kg: float = Field(description="Point prediction of the competition total")
     lower_kg: float
     upper_kg: float

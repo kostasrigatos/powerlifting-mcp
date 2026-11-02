@@ -24,6 +24,7 @@ async def test_predict_total_through_mcp() -> None:
     assert result.structured_content is not None
     assert result.structured_content["predicted_total_kg"] == pytest.approx(568.8663, abs=1e-3)
     assert result.structured_content["confidence"] == pytest.approx(0.95)
+    assert result.structured_content["inputs"]["federation"] == "HPF"
 
 
 async def test_invalid_input_returns_located_error() -> None:

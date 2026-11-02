@@ -1,9 +1,10 @@
 """MCP server: exposes the model layer as three tools over stdio.
 
-It is thin by design. Each tool takes a validated input schema, calls the model layer , and
+It is thin by design. Each tool takes a validated input schema, calls the model layer, and
 returns an output schema. All logic and numbers live in model.py
 """
 
+import dataclasses
 import logging
 
 from mcp.server.mcpserver import MCPServer
@@ -36,7 +37,7 @@ server = MCPServer(
 def predict_total(params: PredictTotalInput) -> TotalPredictionOutput:
     """Predict a raw full-power total with a split-conformal prediction interval.
 
-    The interval width if fixed per confidence level. Its coverage was checked on held-out
+    The interval width is fixed per confidence level. Its coverage was checked on held-out
     lifters and differs by sex: see the validation_coverage fields.
     """
     try:
@@ -45,12 +46,12 @@ def predict_total(params: PredictTotalInput) -> TotalPredictionOutput:
         )
     except ValueError as error:
         raise ToolError(str(error)) from error
-    return TotalPredictionOutput.model_validate(result, from_attributes=True)
+    return TotalPredictionOutput.model_validate({"inputs": params, **dataclasses.asdict(result)})
 
 
 @server.tool()
 def strength_standing(params: StrengthStandingInput) -> StrengthStandingOutput:
-    """DOTS score of a total and its percentile among same-sex Greek raw lifters."""
+    """DOTS of a total and its percentile among same-sex Greek raw lifters; all federations."""
     result = model.strength_standing(params.sex, params.bodyweight_kg, params.total_kg)
     return StrengthStandingOutput.model_validate(result, from_attributes=True)
 

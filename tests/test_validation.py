@@ -1,5 +1,7 @@
 """Bad inputs must fail at the schema boundary with clear, located errors."""
 
+import dataclasses
+
 import pytest
 from pydantic import ValidationError
 
@@ -66,8 +68,9 @@ def test_lift_balance_input_rejects_zero_lift() -> None:
 
 
 def test_outputs_build_from_model_results() -> None:
+    params = PredictTotalInput.model_validate(VALID_PREDICT)
     prediction = TotalPredictionOutput.model_validate(
-        predict_total("M", 90.6, 34, "HPF"), from_attributes=True
+        {"inputs": params, **dataclasses.asdict(predict_total("M", 90.6, 34, "HPF"))}
     )
     assert prediction.predicted_total_kg == pytest.approx(568.8663, abs=1e-3)
 
